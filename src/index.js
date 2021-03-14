@@ -10,12 +10,15 @@ app.use(express.json());
 
 const users = [];
 
-function checksExistsUserAccount(request, response, next) {
-  const { username } = request.header;
+function checkIfUserExists(request, response, next) {
+  const { username } = request.headers;
 
   const userExists = users.find((user) => user.username === username);
   if (!userExists)
-    return response.status(404).json({ error: 'Username taken.' });
+    return response.status(404).json({ error: 'User not found.' });
+
+  response.locals.currentUser = userExists;
+  next();
 }
 
 app.post('/users', (request, response) => {
@@ -37,23 +40,38 @@ app.post('/users', (request, response) => {
   return response.status(201).json(newUser);
 });
 
-app.get('/todos', checksExistsUserAccount, (request, response) => {
+app.get('/todos', checkIfUserExists, (request, response) => {
+  const { currentUser: user } = response.locals;
+
+  return response.json(user.todos);
+});
+
+app.post('/todos', checkIfUserExists, (request, response) => {
+  const { currentUser: user } = response.locals;
+  const { title, deadline } = request.body;
+
+  const newTodo = {
+    id: uuidv4(),
+    title,
+    done: false,
+    deadline: new Date(deadline),
+    created_at: new Date(),
+  };
+
+  user.todos.push(newTodo);
+
+  return response.status(201).json(newTodo);
+});
+
+app.put('/todos/:id', checkIfUserExists, (request, response) => {
   // Complete aqui
 });
 
-app.post('/todos', checksExistsUserAccount, (request, response) => {
+app.patch('/todos/:id/done', checkIfUserExists, (request, response) => {
   // Complete aqui
 });
 
-app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
-});
-
-app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
-});
-
-app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
+app.delete('/todos/:id', checkIfUserExists, (request, response) => {
   // Complete aqui
 });
 

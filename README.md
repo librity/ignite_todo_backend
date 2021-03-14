@@ -62,3 +62,4 @@ $ yarn test
 
 - https://rapidapi.com/blog/put-vs-patch/
 - https://github.com/uuidjs/uuid#quickstart
+- https://stackoverflow.com/questions/18875292/passing-variables-to-the-next-middleware-using-next-in-express-js
