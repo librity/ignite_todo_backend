@@ -21,6 +21,20 @@ function checkIfUserExists(request, response, next) {
   next();
 }
 
+function checkIfTodoExists(request, response, next) {
+  const { id } = request.params;
+  const { currentUser: user } = response.locals;
+
+  const todos = user.todos;
+  const targetTodoIndex = todos.findIndex((todo) => todo.id === id);
+
+  if (targetTodoIndex === -1)
+    return response.status(404).json({ error: 'To do not found.' });
+
+  response.locals.targetTodoIndex = targetTodoIndex;
+  next();
+}
+
 app.post('/users', (request, response) => {
   const { name, username } = request.body;
 
@@ -63,16 +77,58 @@ app.post('/todos', checkIfUserExists, (request, response) => {
   return response.status(201).json(newTodo);
 });
 
-app.put('/todos/:id', checkIfUserExists, (request, response) => {
-  // Complete aqui
-});
+app.put(
+  '/todos/:id',
+  checkIfUserExists,
+  checkIfTodoExists,
+  (request, response) => {
+    const { title, deadline } = request.body;
+    const { currentUser: user, targetTodoIndex } = response.locals;
 
-app.patch('/todos/:id/done', checkIfUserExists, (request, response) => {
-  // Complete aqui
-});
+    const todos = user.todos;
 
-app.delete('/todos/:id', checkIfUserExists, (request, response) => {
-  // Complete aqui
-});
+    const targetTodo = todos[targetTodoIndex];
+    const updatedTodo = {
+      ...targetTodo,
+      title,
+      deadline,
+    };
+
+    todos[targetTodoIndex] = updatedTodo;
+
+    return response.status(201).json(updatedTodo);
+  },
+);
+
+app.patch(
+  '/todos/:id/done',
+  checkIfUserExists,
+  checkIfTodoExists,
+  (request, response) => {
+    const { currentUser: user, targetTodoIndex } = response.locals;
+
+    const todos = user.todos;
+
+    const targetTodo = todos[targetTodoIndex];
+    targetTodo.done = true;
+
+    return response.status(200).json(targetTodo);
+  },
+);
+
+app.delete(
+  '/todos/:id',
+  checkIfUserExists,
+  checkIfTodoExists,
+  (request, response) => {
+    const { currentUser: user, targetTodoIndex } = response.locals;
+
+    const todos = user.todos;
+
+    todos.splice(targetTodoIndex, 1);
+
+    return response.status(204).json({});
+  },
+);
 
 module.exports = app;

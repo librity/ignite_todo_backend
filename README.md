@@ -23,8 +23,8 @@ A to-do list backend made with NodeJS, Express and Jest.
 1. Clone this repo locally and install node packages:
 
 ```bash
-$ git clone https://github.com/librity/ignite_todo_list.git
-$ cd ignite_todo_list
+$ git clone https://github.com/librity/ignite_todo_backend.git
+$ cd ignite_todo_backend
 $ yarn install
 ```
 
@@ -34,7 +34,8 @@ $ yarn install
 $ yarn dev
 ```
 
-3. Import the Insomnia workspace from `./insomnia/workspace.json`.
+3. Import the Insomnia workspace from `./insomnia/workspace.json`
+   and run some requests.
 
 ### Testing
 
@@ -63,3 +64,5 @@ $ yarn test
 - https://rapidapi.com/blog/put-vs-patch/
 - https://github.com/uuidjs/uuid#quickstart
 - https://stackoverflow.com/questions/18875292/passing-variables-to-the-next-middleware-using-next-in-express-js
+- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
+- https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#2xx_success
